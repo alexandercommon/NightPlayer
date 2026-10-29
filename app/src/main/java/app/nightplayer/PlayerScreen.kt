@@ -637,7 +637,7 @@ private fun TrackDialog(c: MediaController, folder: String, onDismiss: () -> Uni
                                         .clickable {
                                             val idx = entries.indexOfFirst { it.id == e.id }
                                             if (idx >= 0) {
-                                                c.seekTo(idx, Store.position(e.id))
+                                                c.seekTo(idx, 0L)
                                                 c.play()
                                             }
                                             onDismiss()
