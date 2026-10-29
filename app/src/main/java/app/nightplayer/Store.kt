@@ -60,6 +60,12 @@ object Store {
             prefs.edit().putString("lastTrack", v).apply()
         }
 
+    private var lastPos: Long
+        get() = prefs.getLong("lastPos", prefs.getLong("pos:$lastTrack", 0L))
+        set(v) {
+            prefs.edit().putLong("lastPos", v.coerceAtLeast(0L)).apply()
+        }
+
     fun order(folder: String): List<String> =
         prefs.getString("order:$folder", null)?.split("\n")?.filter { it.isNotEmpty() } ?: emptyList()
 
@@ -68,9 +74,9 @@ object Store {
         else prefs.edit().putString("order:$folder", ids.joinToString("\n")).apply()
     }
 
-    fun position(id: String): Long = prefs.getLong("pos:$id", 0L)
+    fun position(id: String): Long = if (id == lastTrack) lastPos else 0L
 
     fun savePosition(id: String, ms: Long) {
-        prefs.edit().putLong("pos:$id", ms.coerceAtLeast(0L)).apply()
+        prefs.edit().putString("lastTrack", id).putLong("lastPos", ms.coerceAtLeast(0L)).apply()
     }
 }
