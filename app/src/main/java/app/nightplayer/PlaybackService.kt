@@ -33,15 +33,8 @@ class PlaybackService : MediaSessionService() {
             savePosition()
         }
 
-        override fun onPositionDiscontinuity(oldPosition: Player.PositionInfo, newPosition: Player.PositionInfo, reason: Int) {
-            val oldId = oldPosition.mediaItem?.mediaId ?: return
-            if (oldId == newPosition.mediaItem?.mediaId) return
-            val pos = if (reason == Player.DISCONTINUITY_REASON_AUTO_TRANSITION) 0L else oldPosition.positionMs
-            Store.savePosition(oldId, pos)
-        }
-
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-            if (mediaItem != null) Store.lastTrack = mediaItem.mediaId
+            if (mediaItem != null) Store.savePosition(mediaItem.mediaId, player.currentPosition)
         }
     }
 
@@ -96,7 +89,6 @@ class PlaybackService : MediaSessionService() {
     private fun savePosition() {
         val item = player.currentMediaItem ?: return
         Store.savePosition(item.mediaId, player.currentPosition)
-        Store.lastTrack = item.mediaId
     }
 
     private fun startTimer(restart: Boolean) {
